@@ -3,6 +3,7 @@ import * as dotenv from "dotenv"
 import { createClient } from 'redis';
 import { v4 as uuidv4 } from 'uuid'
 import * as bodyParser from 'body-parser'
+import { UserData, User} from './models/User'
 
 
 dotenv.config()
@@ -22,10 +23,7 @@ app.get("/", async (req, res) => {
 // CREATE USER
 app.post('/users', async (req,res) => {
     if (!client.isReady) await client.connect();
-    const user = {
-        name: req.body.name || 'User',
-        age: req.body.age || 0
-    }
+    const user = new UserData(req.body.name, req.body.age) 
     const id = uuidv4()
     await client.set(id, JSON.stringify(user))
     res.json({ id, ...user })
@@ -44,33 +42,29 @@ app.get("/users/:id", async (req, res) => {
 app.put("/users/:id", async (req,res) => {
     if (!client.isReady) await client.connect();
     const userId = req.params.id
-    const user = {
-        name: req.body.name || 'User',
-        age: req.body.age || 0
-    }
+    const user = new UserData(req.body.name, req.body.age) 
     await client.set(userId, JSON.stringify(user))
     res.json({ ...user, id: userId })
 })
 
 // DELETE USER
-// app.delete("users/:id", async (req,res) => {
-//     if (!client.isReady) await client.connect();
-//     const userId = req.params.id
-//     const keys = await client.keys("id")
-//     console.log(keys)
-//     const userToDel = keys.find(el => el == userId)
-//     await client.del(userToDel)
-//     res.json({ userToDel })
-// })
+app.delete("/users/:id", async (req,res) => {
+    if (!client.isReady) await client.connect();
+    const userId = req.params.id
+    await client.del(userId)
+    res.json({ id: userId })
+})
 
 // GET USERS
 app.get("/users", async (req, res) => {
     if (!client.isReady) await client.connect();
     const keys = await client.keys("*")
-    const users: Array<object> = []
+    const users: Array<User> = []
     for (const key of keys) {
-        const user = JSON.parse( await client.get(key) || "{}")
-        users.push({ id: key, ...user })
+        const data = JSON.parse( await client.get(key) || "{}")
+        const user = new User(data.name, data.age)
+        user.id = key
+        users.push(user)
     }
     res.json({ count: users.length, users })
 })
