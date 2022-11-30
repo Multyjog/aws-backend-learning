@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 app.use("/", authentication);
-app.use("/note", notes);
+app.use("/notes", notes);
 
 // Welcome
 app.post("/welcome", verifyToken, (req, res) => {

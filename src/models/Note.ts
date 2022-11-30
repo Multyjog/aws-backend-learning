@@ -5,6 +5,7 @@ export const noteSchema = new mongoose.Schema({
   header: { type: String },
   message: { type: String },
   created_at: { type: String },
+  updated_at: { type: String },
 });
 
 export const noteModel = mongoose.model("note", noteSchema);
