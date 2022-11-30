@@ -29,15 +29,15 @@ const main = async () => {
     { id: user._id.toString(), email: user.email },
     process.env.TOKEN_KEY,
     {
-      expiresIn: "2h",
+      expiresIn: "24h",
     }
   );
   user.token = token;
   await user.save();
 
   await noteModel.create({
-    header: "Ewe",
-    message: "dasdasdasdasda",
+    header: "Initial Note Header",
+    message: "Initial Note Message",
     owner: user._id,
   });
 
