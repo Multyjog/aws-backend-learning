@@ -23,6 +23,7 @@ const main = async () => {
     last_name: "test",
     email: "test@gmail.com",
     password: await bcrypt.hash("123", 10),
+    role: "admin",
   });
 
   const token = jwt.sign(

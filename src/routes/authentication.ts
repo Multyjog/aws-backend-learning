@@ -6,16 +6,20 @@ import * as jwt from "jsonwebtoken";
 import { ITokenData } from "../middleware/auth";
 
 const router: Router = express.Router();
-
+const ROLES = ["user", "manager", "admin"];
 // Register
 router.post("/register", async (req: Request, res: Response) => {
-  const { first_name, last_name, email, password } = req.body;
+  const { first_name, last_name, email, password, role } = req.body;
   const emailLowerCase = email.toLowerCase();
   // Validate user input
-  if (!(email && password && first_name && last_name)) {
+  if (!(email && password && first_name && last_name && role)) {
     res.status(400).json({ message: "All inputs is required" });
+    return;
   }
-
+  if (!ROLES.includes(role)) {
+    res.status(400).json({ message: "Invalid 'role' input" });
+    return;
+  }
   // check if user already exist
   // Validate if user exist in our database
   const oldUser = await userModel.findOne({ email: emailLowerCase });
@@ -34,6 +38,7 @@ router.post("/register", async (req: Request, res: Response) => {
     last_name,
     email: emailLowerCase,
     password: encryptedPassword,
+    role,
   });
 
   // Create token
@@ -52,6 +57,7 @@ router.post("/register", async (req: Request, res: Response) => {
     first_name: user.first_name,
     last_name: user.last_name,
     email: user.email,
+    role,
     id: user._id,
     token,
   };

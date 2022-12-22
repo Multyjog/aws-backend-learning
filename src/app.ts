@@ -9,6 +9,7 @@ import * as bodyParser from "body-parser";
 
 import authentication from "./routes/authentication";
 import notes from "./routes/notes";
+import users from "./routes/users";
 
 dotenv.config();
 connectToDB();
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 
 app.use("/", authentication);
 app.use("/notes", notes);
+app.use("/users", users);
 
 // Welcome
 app.post("/welcome", verifyToken, (req, res) => {
