@@ -6,6 +6,7 @@ import * as express from "express";
 // import * as jwt from "jsonwebtoken";
 import { verifyToken } from "./middleware/auth";
 import * as bodyParser from "body-parser";
+import * as cors from "cors";
 
 import authentication from "./routes/authentication";
 import notes from "./routes/notes";
@@ -17,6 +18,8 @@ connectToDB();
 export const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
+
+app.use(cors());
 
 app.use("/", authentication);
 app.use("/notes", notes);
